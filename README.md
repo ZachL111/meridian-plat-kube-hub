@@ -1,68 +1,40 @@
 # meridian-plat-kube-hub
 
-`meridian-plat-kube-hub` packages a practical platform engineering exercise in Java. The emphasis is on deterministic behavior, a small public API, and examples that explain the tradeoffs.
+`meridian-plat-kube-hub` is a compact Java repository for platform engineering, centered on this goal: Package a Java local lab for kube analysis with framed sample traffic, bounds and ordering tests, and documented operating limits.
 
-## How I Read Meridian Plat Kube Hub
+## Reason For The Project
 
-The useful thing to inspect here is how the same score rule is represented in code, metadata, and examples. If those three pieces disagree, the audit script should make the drift visible.
+I want this repository to be useful as a quick reading exercise: fixtures first, implementation second, verifier last.
 
-## Problem Shape
+## Meridian Plat Kube Hub Review Notes
 
-The goal is to capture the core behavior in code and make the surrounding assumptions obvious. A reader should be able to run the verifier, open the fixtures, and understand why each decision was made.
+The first comparison I would make is `rollout width` against `quota pressure` because it shows where the rule is most opinionated.
 
-## Internal Model
+## What It Does
 
-The design is intentionally direct: parse or construct a signal, score it, classify it, and verify the expected branch. This makes the repository useful for studying platform engineering behavior without needing a service or database unless the language project itself is SQL. The Java implementation uses a compact package layout and direct assertion checks.
+- `fixtures/domain_review.csv` adds cases for rollout width and quota pressure.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/meridian-plat-kube-walkthrough.md` walks through the case spread.
+- The Java code includes a review path for `rollout width` and `quota pressure`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Scenario Walkthrough
+## How It Is Put Together
 
-The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
+The core code exposes a scoring path and the added review layer uses `signal`, `slack`, `drag`, and `confidence`. The domain terms are `rollout width`, `quota pressure`, `route drift`, and `secret scope`.
 
-## Main Behaviors
+The Java code keeps the review rule close to the tests.
 
-- Uses fixture data to keep route policy changes visible in code review.
-- Includes extended examples for rollout constraints, including `recovery` and `degraded`.
-- Documents environment checks tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-
-## Run It Locally
-
-Clone the repository, enter the directory, and run the verifier. No database server, cloud account, or token is required.
-
-## Validation
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
-
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Repository Map
-
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-
-## Known Edges
-
-The repository favors determinism over breadth. It does not pull live data, keep secrets, or depend on network access for verification.
-
-## Follow-Up Work
-
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add one more platform engineering fixture that focuses on a malformed or borderline input.
-
-## How To Run It
+## Run It
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Check It
+
+That command is also the regression path. It verifies the domain cases and catches mismatches between the CSV, metadata, and code.
+
+## Boundaries
+
+The repository is intentionally scoped to local checks. I would expand it by adding adversarial fixtures before adding features.
