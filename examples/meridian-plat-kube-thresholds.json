@@ -1,0 +1,17 @@
+{
+  "repo": "meridian-plat-kube-hub",
+  "thresholds": {
+    "signal": 4,
+    "slack": 2,
+    "confidence": 1,
+    "drag": 3,
+    "ship": 171,
+    "watch": 110
+  },
+  "terms": [
+    "rollout width",
+    "quota pressure",
+    "route drift",
+    "secret scope"
+  ]
+}
